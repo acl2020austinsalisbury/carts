@@ -82,6 +82,7 @@ pipeline {
       }
     }
   }
+}
       steps {
         container('kubectl') {
           sh "sed -i 's#image: .*#image: ${env.TAG_DEV}#' manifest/carts.yml"
