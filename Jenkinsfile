@@ -63,7 +63,15 @@ pipeline {
           return env.BRANCH_NAME ==~ 'release/.*' || env.BRANCH_NAME ==~'master'
         }
       }
-      stage('DT Deploy Event') {
+      
+      steps {
+        container('kubectl') {
+          sh "sed -i 's#image: .*#image: ${env.TAG_DEV}#' manifest/carts.yml"
+          sh "kubectl -n dev apply -f manifest/carts.yml"
+        }
+      }
+    }
+    stage('DT Deploy Event') {
   when {
       expression {
       return env.BRANCH_NAME ==~ 'release/.*' || env.BRANCH_NAME ==~'master'
@@ -83,13 +91,6 @@ pipeline {
     }
   }
 }
-      steps {
-        container('kubectl') {
-          sh "sed -i 's#image: .*#image: ${env.TAG_DEV}#' manifest/carts.yml"
-          sh "kubectl -n dev apply -f manifest/carts.yml"
-        }
-      }
-    }
     steps {
     container("curl") {
       script {
